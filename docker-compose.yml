@@ -3,5 +3,23 @@ services:
     build: .
     container_name: my-telegram-bot
     restart: unless-stopped
+    depends_on:
+      - db
     env_file:
       - .env
+    environment:
+      - DB_URL=postgresql://botuser:botpass@db:5432/botdb
+
+  db:
+    image: postgres:16
+    container_name: bot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: botdb
+      POSTGRES_USER: botuser
+      POSTGRES_PASSWORD: botpass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
