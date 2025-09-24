@@ -20,6 +20,16 @@ services:
       POSTGRES_PASSWORD: botpass
     volumes:
       - postgres_data:/var/lib/postgresql/data
+  admin:
+    build: ./admin  # Контекст: /root/py-bot/admin/, Dockerfile там
+    container_name: bot-admin
+    restart: unless-stopped
+    depends_on:
+      - db
+    ports:
+      - "8080:8080"  # Хост:8080 -> контейнер:8080 (/code/ uvicorn)
+    environment:
+      - DB_URL=postgresql://botuser:botpass@db:5432/botdb  # Используется в /code/models.py
 
 volumes:
   postgres_data:

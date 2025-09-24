@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head><title>Users</title></head>
+<body>
+    <h1>Manage Bot Users</h1>
+    <form method="post" action="/users">
+        User ID: <input type="number" name="user_id" required>  <!-- Добавлен required -->
+        Username: <input type="text" name="username" required>  <!-- Добавлен required -->
+        <button type="submit">Add User</button>
+    </form>
+    <table border="1">
+        <tr><th>ID</th><th>Username</th><th>Actions</th></tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.user_id }}</td>
+            <td><form method="post" action="/users/{{ user.user_id }}"><input type="text" name="username" value="{{ user.username }}"><button>Update</button></form></td>
+            <td><form method="post" action="/delete/{{ user.user_id }}"><button>Delete</button></form></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
