@@ -1,0 +1,43 @@
+name: Build and Push Docker Image to Docker Hub
+
+# Когда запускать: при пушах в main или создании релиза
+on:
+  push:
+    branches: [ main ]
+  release:
+    types: [ created ]
+
+# Задачи, которые нужно выполнить
+jobs:
+  build:
+    # Используем Ubuntu как рабочую машину
+    runs-on: ubuntu-latest
+
+    # Шаги выполнения
+    steps:
+      # Скачиваем твой код с GitHub
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Логинимся в Docker Hub с твоими ключами
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Готовим Docker для сборки
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Собираем и отправляем образ
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .  # Берем всё из /root/py-bot/
+          file: ./Dockerfile  # Используем твой Dockerfile для бота
+          push: true  # Отправляем в Docker Hub
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/my-telegram-bot:latest  # Имя образа
+          # Кэшируем, чтобы быстрее собирать в будущем
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
